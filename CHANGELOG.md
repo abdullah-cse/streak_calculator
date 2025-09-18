@@ -1,4 +1,14 @@
-## [1.0.0] - 2024-01-15
+## [0.0.3] - 2024-09-18
+
+- Refactor(streak calculator): Simplify streak calculation logic
+
+## [0.0.2] - 2024-09-16
+
+- Refactor(weekly streak calculator) : Weekly streak calculation based on weekStart date and streakTarget.
+- test(weeklyStreakCalculator): Rewrite the Unit test covering real case scenario.
+- Removed unused test files related to streak result and utilities.
+
+## [0.0.1] - 2024-09-12
 
 ### Added
 - Initial release of the Streak Calculator package
@@ -45,15 +55,3 @@
 - Optimized for datasets with 10,000+ entries including duplicates and random order
 - Smart filtering for streak target calculations
 
-### Data Processing Features
-- **Automatic Deduplication**: Removes dates that fall on the same day regardless of time
-- **Time Normalization**: Strips hours, minutes, seconds - focuses on date only
-- **Intelligent Sorting**: Handles completely unsorted input data
-- **Validation**: Comprehensive parameter validation with clear error messages
-
-### Documentation
-- Comprehensive README with usage examples and real-world scenarios
-- API documentation for all public classes and methods
-- Performance guidelines and benchmarks
-- Multiple usage scenarios including habit tracking, goal setting, and analytics
-- Complete examples showing data processing capabilities

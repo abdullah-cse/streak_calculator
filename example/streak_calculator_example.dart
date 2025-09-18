@@ -26,9 +26,6 @@ void _dailyStreakExample() {
   print('📅 Daily Streak Example');
   print('-' * 25);
 
-  const calculator = StreakCalculator();
-
-  // Simulate habit tracking data (exercise days)
   final exerciseDates = [
     DateTime(2024, 1, 1),
     DateTime(2024, 1, 2),
@@ -40,48 +37,44 @@ void _dailyStreakExample() {
     DateTime(2024, 1, 9),
   ];
 
-  final result = calculator.calculateStreak(
-    dates: exerciseDates,
+  final calculator = StreakCalculator(
     streakType: StreakType.daily,
+    dates: exerciseDates,
   );
 
   print(
     'Exercise dates: ${exerciseDates.map((d) => '${d.month}/${d.day}').join(', ')}',
   );
-  print('Current daily streak: ${result.currentStreak} days');
-  print('Best daily streak: ${result.bestStreak} days');
-  print('Streak type: ${result.streakType}');
+  print('Current daily streak: ${calculator.currentStreak} days');
+  print('Best daily streak: ${calculator.bestStreak} days');
 }
 
 void _weeklyStreakExample() {
   print('📊 Weekly Streak Example');
   print('-' * 26);
 
-  const calculator = StreakCalculator();
-
-  // Simulate weekly goal completion (at least once per week)
   final goalCompletionDates = [
-    DateTime(2024, 1, 1), // Week 1
-    DateTime(2024, 1, 8), // Week 2
-    DateTime(2024, 1, 15), // Week 3
-    DateTime(2024, 1, 22), // Week 4
-    DateTime(2024, 1, 29), // Week 5
-    DateTime(2024, 2, 5), // Week 6
-    DateTime(2024, 2, 19), // Week 8 (gap in week 7)
-    DateTime(2024, 2, 26), // Week 9
+    DateTime(2024, 1, 1),
+    DateTime(2024, 1, 8),
+    DateTime(2024, 1, 15),
+    DateTime(2024, 1, 22),
+    DateTime(2024, 1, 29),
+    DateTime(2024, 2, 5),
+    DateTime(2024, 2, 19),
+    DateTime(2024, 2, 26),
   ];
 
-  // Calculate with Monday as week start (default)
-  final mondayResult = calculator.calculateStreak(
-    dates: goalCompletionDates,
+  final mondayCalculator = StreakCalculator(
     streakType: StreakType.weekly,
+    dates: goalCompletionDates,
+    streakTarget: 1,
     weekStartDay: DateTime.monday,
   );
 
-  // Calculate with Sunday as week start
-  final sundayResult = calculator.calculateStreak(
-    dates: goalCompletionDates,
+  final sundayCalculator = StreakCalculator(
     streakType: StreakType.weekly,
+    dates: goalCompletionDates,
+    streakTarget: 1,
     weekStartDay: DateTime.sunday,
   );
 
@@ -89,10 +82,10 @@ void _weeklyStreakExample() {
     'Goal completion dates: ${goalCompletionDates.map((d) => '${d.month}/${d.day}').join(', ')}',
   );
   print(
-    'Weekly streak (Mon start): Current ${mondayResult.currentStreak}, Best ${mondayResult.bestStreak}',
+    'Weekly streak (Mon start): Current ${mondayCalculator.currentStreak}, Best ${mondayCalculator.bestStreak}',
   );
   print(
-    'Weekly streak (Sun start): Current ${sundayResult.currentStreak}, Best ${sundayResult.bestStreak}',
+    'Weekly streak (Sun start): Current ${sundayCalculator.currentStreak}, Best ${sundayCalculator.bestStreak}',
   );
 }
 
@@ -100,25 +93,22 @@ void _monthlyStreakExample() {
   print('📈 Monthly Streak Example');
   print('-' * 27);
 
-  const calculator = StreakCalculator();
-
-  // Simulate monthly project contributions
   final contributionDates = [
-    DateTime(2023, 10, 15), // October
-    DateTime(2023, 11, 3), // November
-    DateTime(2023, 12, 20), // December
-    DateTime(2024, 1, 8), // January
-    DateTime(2024, 1, 22), // January (multiple in same month)
-    DateTime(2024, 2, 14), // February
-    DateTime(2024, 2, 28), // February
-    // March missing - breaks current streak
-    DateTime(2024, 4, 10), // April
-    DateTime(2024, 5, 5), // May
+    DateTime(2023, 10, 15),
+    DateTime(2023, 11, 3),
+    DateTime(2023, 12, 20),
+    DateTime(2024, 1, 8),
+    DateTime(2024, 1, 22),
+    DateTime(2024, 2, 14),
+    DateTime(2024, 2, 28),
+    DateTime(2024, 4, 10),
+    DateTime(2024, 5, 5),
   ];
 
-  final result = calculator.calculateStreak(
-    dates: contributionDates,
+  final calculator = StreakCalculator(
     streakType: StreakType.monthly,
+    dates: contributionDates,
+    streakTarget: 1,
   );
 
   final monthNames = contributionDates
@@ -128,76 +118,66 @@ void _monthlyStreakExample() {
     ..sort();
 
   print('Active months: ${monthNames.join(', ')}');
-  print('Current monthly streak: ${result.currentStreak} months');
-  print('Best monthly streak: ${result.bestStreak} months');
+  print('Current monthly streak: ${calculator.currentStreak} months');
+  print('Best monthly streak: ${calculator.bestStreak} months');
 }
 
 void _performanceExample() {
   print('⚡ Performance Example');
   print('-' * 21);
 
-  const calculator = StreakCalculator();
-
-  // Generate a large dataset (10,000 dates over ~27 years)
-  print('Generating large dataset...');
   final stopwatch = Stopwatch()..start();
 
   final largeDateSet = <DateTime>[];
   final baseDate = DateTime(2000, 1, 1);
 
-  // Create dates with some gaps to make it realistic
   for (int i = 0; i < 10000; i++) {
-    // Skip some days randomly to create realistic gaps
-    final skipDays = i % 7 == 0 ? 2 : 0; // Skip 2 days every 7th iteration
+    final skipDays = i % 7 == 0 ? 2 : 0;
     largeDateSet.add(baseDate.add(Duration(days: i + skipDays)));
   }
 
   final generationTime = stopwatch.elapsedMilliseconds;
   stopwatch.reset();
 
-  // Calculate daily streak
-  final dailyResult = calculator.calculateStreak(
-    dates: largeDateSet,
+  final dailyCalculator = StreakCalculator(
     streakType: StreakType.daily,
+    dates: largeDateSet,
   );
-
-  final dailyCalculationTime = stopwatch.elapsedMilliseconds;
+  final dailyTime = stopwatch.elapsedMilliseconds;
   stopwatch.reset();
 
-  // Calculate weekly streak
-  final weeklyResult = calculator.calculateStreak(
-    dates: largeDateSet,
+  final weeklyCalculator = StreakCalculator(
     streakType: StreakType.weekly,
+    dates: largeDateSet,
+    streakTarget: 1,
   );
-
-  final weeklyCalculationTime = stopwatch.elapsedMilliseconds;
+  final weeklyTime = stopwatch.elapsedMilliseconds;
   stopwatch.reset();
 
-  // Calculate monthly streak
-  final monthlyResult = calculator.calculateStreak(
-    dates: largeDateSet,
+  final monthlyCalculator = StreakCalculator(
     streakType: StreakType.monthly,
+    dates: largeDateSet,
+    streakTarget: 1,
   );
-
-  final monthlyCalculationTime = stopwatch.elapsedMilliseconds;
+  final monthlyTime = stopwatch.elapsedMilliseconds;
   stopwatch.stop();
 
   print('Dataset size: ${largeDateSet.length} dates');
-  print('Date range: ${largeDateSet.first.year}-${largeDateSet.last.year}');
-  print('');
+  print('Date range: ${largeDateSet.first.year}-${largeDateSet.last.year}\n');
+
   print('Performance Results:');
   print('  Generation time: ${generationTime}ms');
   print(
-    '  Daily calculation: ${dailyCalculationTime}ms (Current: ${dailyResult.currentStreak}, Best: ${dailyResult.bestStreak})',
+    '  Daily calculation: ${dailyTime}ms (Current: ${dailyCalculator.currentStreak}, Best: ${dailyCalculator.bestStreak})',
   );
   print(
-    '  Weekly calculation: ${weeklyCalculationTime}ms (Current: ${weeklyResult.currentStreak}, Best: ${weeklyResult.bestStreak})',
+    '  Weekly calculation: ${weeklyTime}ms (Current: ${weeklyCalculator.currentStreak}, Best: ${weeklyCalculator.bestStreak})',
   );
   print(
-    '  Monthly calculation: ${monthlyCalculationTime}ms (Current: ${monthlyResult.currentStreak}, Best: ${monthlyResult.bestStreak})',
+    '  Monthly calculation: ${monthlyTime}ms (Current: ${monthlyCalculator.currentStreak}, Best: ${monthlyCalculator.bestStreak})',
   );
-  print('');
-  print('✅ All calculations completed efficiently!');
+
+  print('\n✅ All calculations completed efficiently!');
 }
 
 String _getMonthName(int month) {
