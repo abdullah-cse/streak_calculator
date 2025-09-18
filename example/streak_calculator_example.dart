@@ -75,14 +75,14 @@ void _weeklyStreakExample() {
   final mondayResult = calculator.calculateStreak(
     dates: goalCompletionDates,
     streakType: StreakType.weekly,
-    weekStartDay: WeekStartDay.monday,
+    weekStartDay: DateTime.monday,
   );
 
   // Calculate with Sunday as week start
   final sundayResult = calculator.calculateStreak(
     dates: goalCompletionDates,
     streakType: StreakType.weekly,
-    weekStartDay: WeekStartDay.sunday,
+    weekStartDay: DateTime.sunday,
   );
 
   print(

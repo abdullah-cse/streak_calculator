@@ -5,6 +5,5 @@
 library;
 
 export 'src/enum/streak_type.dart';
-export 'src/enum/week_start_day.dart';
 export 'src/model/streak_result.dart';
 export 'src/streak_calculator_base.dart';

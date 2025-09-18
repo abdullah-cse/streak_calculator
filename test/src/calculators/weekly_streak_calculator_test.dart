@@ -1,164 +1,207 @@
 import 'package:streak_calculator/src/calculators/weekly_streak_calculator.dart';
 import 'package:streak_calculator/src/enum/streak_type.dart';
-import 'package:streak_calculator/src/enum/week_start_day.dart';
-import 'package:streak_calculator/src/utilities/date_normalizer.dart';
-import 'package:streak_calculator/src/utilities/week_key_generator.dart';
 import 'package:test/test.dart';
 
-/// Fake DateNormalizer to fix "today".
-class FakeDateNormalizer extends DateNormalizer {
-  const FakeDateNormalizer(this.fixedToday);
-  final DateTime fixedToday;
-
-  @override
-  DateTime getTodayNormalized() =>
-      DateTime(fixedToday.year, fixedToday.month, fixedToday.day);
-}
-
-/// Fake WeekKeyGenerator for predictable week keys.
-/// Simplified: each Monday starts a new week, key = ISO year*100 + weekNumber.
-class FakeWeekKeyGenerator extends WeekKeyGenerator {
-  const FakeWeekKeyGenerator();
-
-  @override
-  int getWeekKey(DateTime date, WeekStartDay weekStartDay) {
-    // ISO-ish: Monday-based weeks
-    final diff = date.weekday - (weekStartDay == WeekStartDay.monday ? 1 : 7);
-    final monday = date.subtract(Duration(days: diff));
-    final weekOfYear = int.parse(
-      "${monday.year}${monday.month.toString().padLeft(2, '0')}${monday.day.toString().padLeft(2, '0')}",
-    );
-    return weekOfYear;
-  }
-}
-
 void main() {
+  late WeeklyStreakCalculator calculator;
+  late DateTime today;
+
+  setUp(() {
+    calculator = const WeeklyStreakCalculator();
+    today = DateTime(2025, 9, 18); //Fixed date for consistent testing
+  });
+
+  DateTime daysAgo(int days) => today.subtract(Duration(days: days));
+
+  Set<DateTime> consecutiveDays(int startOffset, int count) =>
+      {for (var i = 0; i < count; i++) daysAgo(startOffset + i)};
+
   group('WeeklyStreakCalculator', () {
-    late DateTime today;
-    late WeeklyStreakCalculator calculator;
+    group('Validation', () {
+      test('empty dates returns 0 streaks', () {
+        final result = calculator.calculateStreak({}, 1, 3);
+        expect(result.currentStreak, 0);
+        expect(result.bestStreak, 0);
+        expect(result.streakType, StreakType.weekly);
+        expect(result.streakTarget, 3);
+      });
 
-    setUp(() {
-      today = DateTime(2025, 9, 9); // Tuesday
-      calculator = WeeklyStreakCalculator(
-        dateNormalizer: FakeDateNormalizer(today),
-        weekKeyGenerator: const FakeWeekKeyGenerator(),
-      );
+      test('invalid week start day throws', () {
+        expect(() => calculator.calculateStreak({today}, 0, 3),
+            throwsArgumentError);
+        expect(() => calculator.calculateStreak({today}, 8, 3),
+            throwsArgumentError);
+      });
+
+      test('invalid streak target throws', () {
+        expect(() => calculator.calculateStreak({today}, 1, 0),
+            throwsArgumentError);
+        expect(() => calculator.calculateStreak({today}, 1, 8),
+            throwsArgumentError);
+      });
     });
 
-    test('empty dates returns 0 streaks', () {
-      final result = calculator.calculateStreak({}, WeekStartDay.monday, null);
-      expect(result.currentStreak, 0);
-      expect(result.bestStreak, 0);
-      expect(result.streakType, StreakType.weekly);
+    group('Single activity', () {
+      test('today with target 1', () {
+        final result = calculator.calculateStreak({today}, 1, 1);
+        expect(result.currentStreak, 1);
+        expect(result.bestStreak, 1);
+      });
+
+      test('today with higher target fails', () {
+        final result = calculator.calculateStreak({today}, 1, 3);
+        expect(result.currentStreak, 0);
+        expect(result.bestStreak, 0);
+      });
+
+      test('past date not this week', () {
+        final result = calculator.calculateStreak({daysAgo(8)}, 1, 1);
+        expect(result.currentStreak, 0);
+        expect(result.bestStreak, 1);
+      });
     });
 
-    test('single activity this week counts as current=1, best=1', () {
-      final result = calculator.calculateStreak(
-        {today},
-        WeekStartDay.monday,
-        null,
-      );
-      expect(result.currentStreak, 1);
-      expect(result.bestStreak, 1);
+    group('Consecutive streaks', () {
+      test('ending today', () {
+        final dates = consecutiveDays(0, 3).union(consecutiveDays(7, 2));
+        final result = calculator.calculateStreak(dates, 1, 2);
+        expect(result.currentStreak, 5);
+        expect(result.bestStreak, 5);
+      });
+
+      test('ending yesterday', () {
+        final dates = consecutiveDays(7, 2).union(consecutiveDays(14, 3));
+        final result = calculator.calculateStreak(
+          dates,
+          1,
+          2,
+          referenceDate: today, // Make it explicit
+        );
+        expect(result.currentStreak, 0);
+        expect(result.bestStreak, 5);
+      });
     });
 
-    test(
-        'single activity last week counts as current=1 if no activity this week',
-        () {
-      final lastWeek = today.subtract(const Duration(days: 7));
-      final result = calculator.calculateStreak(
-        {lastWeek},
-        WeekStartDay.monday,
-        null,
-      );
-      expect(result.currentStreak, 1);
-      expect(result.bestStreak, 1);
+    group('Non-consecutive and multiple streaks', () {
+      test('best streak correct', () {
+        final dates = consecutiveDays(0, 1)
+            .union(consecutiveDays(14, 3))
+            .union(consecutiveDays(28, 2));
+        final result = calculator.calculateStreak(dates, 1, 2);
+        expect(result.currentStreak, 0);
+        expect(result.bestStreak, 3);
+      });
+
+      test('longest streak chosen as best', () {
+        final dates = consecutiveDays(0, 2)
+            .union(consecutiveDays(7, 3))
+            .union(consecutiveDays(21, 4))
+            .union(consecutiveDays(28, 3));
+        final result = calculator.calculateStreak(dates, 1, 2);
+        expect(result.currentStreak, 5);
+        expect(result.bestStreak, 7);
+      });
     });
 
-    test('non-consecutive weeks gives best=1, current=1', () {
-      final w1 = today.subtract(const Duration(days: 7));
-      final w3 = today.subtract(const Duration(days: 21));
-      final result = calculator.calculateStreak(
-        {w1, w3},
-        WeekStartDay.monday,
-        null,
-      );
-      expect(result.currentStreak, 1);
-      expect(result.bestStreak, 1);
+    group('Streak target scenarios', () {
+      test('break streak if not fulfilled', () {
+        final dates = consecutiveDays(0, 1).union(consecutiveDays(8, 5));
+        final result = calculator.calculateStreak(dates, 1, 3);
+        expect(result.currentStreak, 0);
+        expect(result.bestStreak, 3); // Only 3 days qualify in the same week
+      });
+
+      test('dates exceeding target behave correctly', () {
+        final dates = consecutiveDays(0, 6).union(consecutiveDays(7, 4));
+        final result = calculator.calculateStreak(dates, 1, 3);
+        expect(result.currentStreak, 10);
+        expect(result.bestStreak, 10);
+      });
     });
 
-    test('consecutive weekly streak ending this week', () {
-      final d1 = today;
-      final d2 = today.subtract(const Duration(days: 7));
-      final d3 = today.subtract(const Duration(days: 14));
-      final result = calculator.calculateStreak(
-        {d1, d2, d3},
-        WeekStartDay.monday,
-        null,
-      );
-      expect(result.currentStreak, 3);
-      expect(result.bestStreak, 3);
+    group('Week start day effects', () {
+      // test('different week starts create different streaks', () {
+      //   final wednesday = DateTime(2024, 1, 10);
+      //   final tuesday = wednesday.subtract(const Duration(days: 1));
+      //   final monday = wednesday.subtract(const Duration(days: 2));
+      //   final dates = {monday, tuesday, wednesday};
+
+      //   final resultMon = calculator.calculateStreak(dates, 1, 2);
+      //   final resultWed = calculator.calculateStreak(dates, 3, 2);
+
+      //   expect(resultMon.currentStreak != resultWed.currentStreak, true);
+      // });
+
+      test('sunday vs monday start - different behavior', () {
+        // Use dates that will span different weeks based on start day
+        final saturday = DateTime(2024, 1, 6); // Saturday
+        final sunday = DateTime(2024, 1, 7); // Sunday
+        final monday = DateTime(2024, 1, 8); // Monday
+        final dates = {saturday, sunday, monday};
+
+        // Use Monday as reference date
+        final referenceDate = DateTime(2024, 1, 8);
+
+        final resultMon = calculator.calculateStreak(
+          dates, 1, 2, // Monday start
+          referenceDate: referenceDate,
+        );
+        final resultSun = calculator.calculateStreak(
+          dates, 7, 2, // Sunday start
+          referenceDate: referenceDate,
+        );
+
+        expect(resultMon.currentStreak != resultSun.currentStreak, true);
+      });
     });
 
-    test('consecutive weekly streak ending last week (no activity this week)',
-        () {
-      final d1 = today.subtract(const Duration(days: 7));
-      final d2 = today.subtract(const Duration(days: 14));
-      final d3 = today.subtract(const Duration(days: 21));
-      final result = calculator.calculateStreak(
-        {d1, d2, d3},
-        WeekStartDay.monday,
-        null,
-      );
-      expect(result.currentStreak, 3);
-      expect(result.bestStreak, 3);
+    group('Year boundary and leap year', () {
+      test('spanning years', () {
+        final dates = {
+          DateTime(2023, 12, 29),
+          DateTime(2023, 12, 30),
+          DateTime(2023, 12, 31),
+          DateTime(2024, 1, 1),
+          DateTime(2024, 1, 2),
+        };
+        final result = calculator.calculateStreak(dates, 1, 3);
+        expect(result.bestStreak, greaterThan(0));
+      });
+
+      test('leap day handling', () {
+        final dates = {
+          DateTime(2024, 2, 28),
+          DateTime(2024, 2, 29),
+          DateTime(2024, 3, 1),
+        };
+        final result = calculator.calculateStreak(dates, 1, 2);
+        expect(result.bestStreak, greaterThan(0));
+      });
     });
 
-    test('streak target enforces minimum days per week', () {
-      final d1 = today; // only 1 day this week
-      final d2 = today.subtract(const Duration(days: 7));
-      final d3 = today
-          .subtract(const Duration(days: 7, hours: -1)); // 2nd day same week
-      final result = calculator.calculateStreak(
-        {d1, d2, d3},
-        WeekStartDay.monday,
-        2,
-      );
-      expect(
-          result.currentStreak, 1,); // last week qualifies, this week does not
-      expect(result.bestStreak, 1);
-    });
+    group('Edge cases', () {
+      test('duplicates handled correctly', () {
+        final dates = {today, today, today};
+        final result = calculator.calculateStreak(dates, 1, 1);
+        expect(result.currentStreak, 1);
+        expect(result.bestStreak, 1);
+      });
 
-    test('multiple streaks, best should be the longest', () {
-      final dates = {
-        today,
-        today.subtract(const Duration(days: 7)),
-        today.subtract(const Duration(days: 14)), // streak of 3
-        today.subtract(const Duration(days: 35)),
-        today.subtract(const Duration(days: 42)),
-        today.subtract(const Duration(days: 49)),
-        today.subtract(const Duration(days: 56)), // streak of 4
-      };
-      final result = calculator.calculateStreak(
-        dates,
-        WeekStartDay.monday,
-        null,
-      );
-      expect(result.currentStreak, 3);
-      expect(result.bestStreak, 4);
-    });
+      test('long streaks maintain accuracy', () {
+        // Create 50 consecutive days (10 weeks × 5 days) going backwards from today
+        final dates = consecutiveDays(0, 50);
 
-    test('handles Sunday as week start day', () {
-      final sunday = DateTime(2025, 9, 7); // Sunday before "today"
-      final monday = DateTime(2025, 9, 8); // Monday (this week)
-      final result = calculator.calculateStreak(
-        {sunday, monday},
-        WeekStartDay.sunday,
-        null,
-      );
-      expect(
-          result.currentStreak, 1,); // both fall into same week by Sunday-start
-      expect(result.bestStreak, 1);
+        final result = calculator.calculateStreak(dates, 1, 3);
+        expect(result.currentStreak, 50);
+        expect(result.bestStreak, 50);
+      });
+
+      test('week with exact target days', () {
+        final dates = consecutiveDays(0, 3);
+        final result = calculator.calculateStreak(dates, 1, 3);
+        expect(result.currentStreak, 3);
+        expect(result.bestStreak, 3);
+      });
     });
   });
 }

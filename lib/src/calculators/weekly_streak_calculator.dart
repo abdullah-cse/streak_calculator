@@ -1,51 +1,66 @@
-import '../enum/streak_type.dart';
-import '../enum/week_start_day.dart';
-import '../model/streak_result.dart';
-import '../utilities/date_normalizer.dart';
-import '../utilities/week_key_generator.dart';
+import 'dart:math' as math;
+import 'package:streak_calculator/src/enum/streak_type.dart';
+import 'package:streak_calculator/src/model/streak_result.dart';
 
-/// Calculator specialized for weekly streak calculations.
-///
-/// This calculator handles week-based streak logic where weeks that meet
-/// the minimum activity target count towards the streak.
+/// Calculates weekly streaks based on activity dates.
+/// 
+/// Streaks are measured by counting active days within consecutive qualifying weeks.
+/// A week qualifies if it has at least the target number of active days.
 class WeeklyStreakCalculator {
   /// Creates a new weekly streak calculator instance.
-  const WeeklyStreakCalculator({
-    DateNormalizer? dateNormalizer,
-    WeekKeyGenerator? weekKeyGenerator,
-  })  : _dateNormalizer = dateNormalizer ?? const DateNormalizer(),
-        _weekKeyGenerator = weekKeyGenerator ?? const WeekKeyGenerator();
-  final DateNormalizer _dateNormalizer;
-  final WeekKeyGenerator _weekKeyGenerator;
+  const WeeklyStreakCalculator();
 
-  /// Calculates weekly streak where weeks meeting the streak target count.
-  ///
-  /// [dates] A set of normalized dates (without time components)
-  /// [weekStartDay] The day that starts each week
-  /// [streakTarget] Minimum number of days required per week (nullable)
-  ///
-  /// Returns a [StreakResult] with current and best weekly streak counts.
+  /// Calculates streak statistics for the given activity dates.
+  /// 
+  /// Returns current streak (days in consecutive qualifying weeks ending at reference date)
+  /// and best streak (highest total days in any consecutive qualifying sequence).
+  /// 
+  /// If [referenceDate] is null, uses DateTime.now().
   StreakResult calculateStreak(
-    Set<DateTime> dates,
-    WeekStartDay weekStartDay,
-    int? streakTarget,
-  ) {
-    final normalizedToday = _dateNormalizer.getTodayNormalized();
+    Set<DateTime> normalizedDates,
+    int weekStartDay,
+    int streakTarget, {
+    DateTime? referenceDate,
+  }) {
+    if (weekStartDay < 1 || weekStartDay > 7) {
+      throw ArgumentError(
+        'Week start day must be between 1 (Monday) and 7 (Sunday)',
+      );
+    }
 
-    // Group dates by week
-    final weeklyData = _groupDatesByWeek(dates, weekStartDay);
+    if (streakTarget < 1 || streakTarget > 7) {
+      throw ArgumentError('Weekly target must be between 1 and 7 days');
+    }
 
-    // Calculate current streak
-    final currentWeek =
-        _weekKeyGenerator.getWeekKey(normalizedToday, weekStartDay);
-    final currentStreak = _calculateCurrentWeeklyStreak(
-      weeklyData,
-      currentWeek,
-      streakTarget,
+    if (normalizedDates.isEmpty) {
+      return StreakResult(
+        currentStreak: 0,
+        bestStreak: 0,
+        streakType: StreakType.weekly,
+        streakTarget: streakTarget,
+      );
+    }
+
+    final reference = referenceDate ?? DateTime.now();
+    final weekGroups = _groupDatesByWeek(normalizedDates, weekStartDay);
+    final qualifyingWeeks = _getQualifyingWeeks(weekGroups, streakTarget);
+
+    if (qualifyingWeeks.isEmpty) {
+      return StreakResult(
+        currentStreak: 0,
+        bestStreak: 0,
+        streakType: StreakType.weekly,
+        streakTarget: streakTarget,
+      );
+    }
+
+    final currentStreak = _calculateCurrentStreak(
+      qualifyingWeeks,
+      weekGroups,
+      weekStartDay,
+      reference,
     );
-
-    // Calculate best streak
-    final bestStreak = _findBestWeeklyStreak(weeklyData, streakTarget);
+    final bestStreak = _calculateBestStreak(qualifyingWeeks, weekGroups);
 
     return StreakResult(
       currentStreak: currentStreak,
@@ -55,113 +70,87 @@ class WeeklyStreakCalculator {
     );
   }
 
-  /// Groups dates by week based on the week start day.
-  ///
-  /// [dates] Set of normalized activity dates
-  /// [weekStartDay] The day that starts each week
-  ///
-  /// Returns a map where keys are week identifiers and values are sets of dates in that week
-  Map<int, Set<DateTime>> _groupDatesByWeek(
-    Set<DateTime> dates,
-    WeekStartDay weekStartDay,
-  ) {
-    final weeklyData = <int, Set<DateTime>>{};
+  /// Groups dates by their week identifier and counts active days per week.
+  Map<int, int> _groupDatesByWeek(Set<DateTime> dates, int weekStartDay) {
+    final weekGroups = <int, int>{};
 
     for (final date in dates) {
-      final weekKey = _weekKeyGenerator.getWeekKey(date, weekStartDay);
-      weeklyData.putIfAbsent(weekKey, () => <DateTime>{}).add(date);
+      final weekKey = _getWeekKey(date, weekStartDay);
+      weekGroups[weekKey] = (weekGroups[weekKey] ?? 0) + 1;
     }
 
-    return weeklyData;
+    return weekGroups;
   }
 
-  /// Calculates the current weekly streak.
-  ///
-  /// [weeklyData] Map of week keys to sets of dates
-  /// [currentWeek] The current week identifier
-  /// [streakTarget] Minimum days required per week
-  ///
-  /// Returns the current weekly streak count
-  int _calculateCurrentWeeklyStreak(
-    Map<int, Set<DateTime>> weeklyData,
-    int currentWeek,
-    int? streakTarget,
-  ) {
-    int currentStreak = 0;
-    int checkWeek = currentWeek;
+  /// Generates a unique week identifier based on weeks since epoch.
+  int _getWeekKey(DateTime date, int weekStartDay) {
+    final daysSinceEpoch = date.difference(DateTime(1970, 1, 1)).inDays;
+    final epochWeekday = DateTime(1970, 1, 1).weekday;
+    final adjustment = (epochWeekday - weekStartDay + 7) % 7;
+    final adjustedDays = daysSinceEpoch + adjustment;
+    return adjustedDays ~/ 7;
+  }
 
-    // Count consecutive weeks that meet the target
-    while (weeklyData.containsKey(checkWeek) &&
-        _meetsWeeklyTarget(weeklyData[checkWeek]!, streakTarget)) {
-      currentStreak++;
+  /// Returns sorted list of weeks that meet the activity target.
+  List<int> _getQualifyingWeeks(Map<int, int> weekGroups, int target) {
+    final qualifying = weekGroups.entries
+        .where((entry) => entry.value >= target)
+        .map((entry) => entry.key)
+        .toList()
+      ..sort();
+    return qualifying;
+  }
+
+  /// Calculates current streak as total active days in consecutive qualifying weeks ending at reference date.
+  /// Returns 0 if the week containing the reference date doesn't qualify.
+  int _calculateCurrentStreak(
+    List<int> qualifyingWeeks,
+    Map<int, int> weekGroups,
+    int weekStartDay,
+    DateTime referenceDate,
+  ) {
+    final currentWeekKey = _getWeekKey(referenceDate, weekStartDay);
+    final qualifyingSet = qualifyingWeeks.toSet();
+
+    if (!qualifyingSet.contains(currentWeekKey)) {
+      return 0;
+    }
+
+    int totalActiveDays = 0;
+    int checkWeek = currentWeekKey;
+
+    while (qualifyingSet.contains(checkWeek)) {
+      totalActiveDays += weekGroups[checkWeek]!;
       checkWeek--;
     }
 
-    // If no activity this week or doesn't meet target, check last week
-    if (currentStreak == 0 &&
-        weeklyData.containsKey(currentWeek - 1) &&
-        _meetsWeeklyTarget(weeklyData[currentWeek - 1]!, streakTarget)) {
-      currentStreak = 1;
-      checkWeek = currentWeek - 2;
+    return totalActiveDays;
+  }
 
-      while (weeklyData.containsKey(checkWeek) &&
-          _meetsWeeklyTarget(weeklyData[checkWeek]!, streakTarget)) {
-        currentStreak++;
-        checkWeek--;
-      }
+  /// Finds the longest sequence of consecutive qualifying weeks and returns total active days.
+  int _calculateBestStreak(List<int> qualifyingWeeks, Map<int, int> weekGroups) {
+    if (qualifyingWeeks.isEmpty) return 0;
+    if (qualifyingWeeks.length == 1) {
+      return weekGroups[qualifyingWeeks.first]!;
     }
 
-    return currentStreak;
-  }
+    int bestStreakDays = 0;
+    int currentSequenceStart = 0;
 
-  /// Checks if a week meets the streak target requirement.
-  ///
-  /// [weekDates] Set of dates in the week
-  /// [streakTarget] Minimum days required (null means any activity counts)
-  ///
-  /// Returns true if the week meets the target
-  bool _meetsWeeklyTarget(Set<DateTime> weekDates, int? streakTarget) {
-    if (streakTarget == null) return weekDates.isNotEmpty;
-    return weekDates.length >= streakTarget;
-  }
+    for (int i = 1; i <= qualifyingWeeks.length; i++) {
+      final bool sequenceBreaks = (i == qualifyingWeeks.length) ||
+          (qualifyingWeeks[i] != qualifyingWeeks[i - 1] + 1);
 
-  /// Finds the longest weekly streak in the dataset that meets the target.
-  ///
-  /// [weeklyData] Map of week keys to sets of dates
-  /// [streakTarget] Minimum days required per week
-  ///
-  /// Returns the length of the best weekly streak
-  int _findBestWeeklyStreak(
-    Map<int, Set<DateTime>> weeklyData,
-    int? streakTarget,
-  ) {
-    if (weeklyData.isEmpty) return 0;
-
-    final sortedWeeks = weeklyData.keys.toList()..sort();
-    int bestStreak = 0;
-    int currentStreak = 0;
-
-    for (int i = 0; i < sortedWeeks.length; i++) {
-      final weekKey = sortedWeeks[i];
-      final weekDates = weeklyData[weekKey]!;
-
-      // Check if this week meets the target
-      if (_meetsWeeklyTarget(weekDates, streakTarget)) {
-        // Check if this week is consecutive to the previous qualifying week
-        if (currentStreak == 0 ||
-            (i > 0 && sortedWeeks[i] == sortedWeeks[i - 1] + 1)) {
-          currentStreak++;
-        } else {
-          // Reset streak if not consecutive
-          currentStreak = 1;
+      if (sequenceBreaks) {
+        int sequenceDays = 0;
+        for (int j = currentSequenceStart; j < i; j++) {
+          sequenceDays += weekGroups[qualifyingWeeks[j]]!;
         }
-        bestStreak = bestStreak > currentStreak ? bestStreak : currentStreak;
-      } else {
-        // Reset streak if target not met
-        currentStreak = 0;
+        bestStreakDays = math.max(bestStreakDays, sequenceDays);
+        currentSequenceStart = i;
       }
     }
 
-    return bestStreak;
+    return bestStreakDays;
   }
 }
