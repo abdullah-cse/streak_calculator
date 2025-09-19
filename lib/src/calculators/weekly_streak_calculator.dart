@@ -3,7 +3,7 @@ import 'package:streak_calculator/src/enum/streak_type.dart';
 import 'package:streak_calculator/src/model/streak_result.dart';
 
 /// Calculates weekly streaks based on activity dates.
-/// 
+///
 /// Streaks are measured by counting active days within consecutive qualifying weeks.
 /// A week qualifies if it has at least the target number of active days.
 class WeeklyStreakCalculator {
@@ -11,10 +11,10 @@ class WeeklyStreakCalculator {
   const WeeklyStreakCalculator();
 
   /// Calculates streak statistics for the given activity dates.
-  /// 
+  ///
   /// Returns current streak (days in consecutive qualifying weeks ending at reference date)
   /// and best streak (highest total days in any consecutive qualifying sequence).
-  /// 
+  ///
   /// If [referenceDate] is null, uses DateTime.now().
   StreakResult calculateStreak(
     Set<DateTime> normalizedDates,
@@ -128,7 +128,8 @@ class WeeklyStreakCalculator {
   }
 
   /// Finds the longest sequence of consecutive qualifying weeks and returns total active days.
-  int _calculateBestStreak(List<int> qualifyingWeeks, Map<int, int> weekGroups) {
+  int _calculateBestStreak(
+      List<int> qualifyingWeeks, Map<int, int> weekGroups) {
     if (qualifyingWeeks.isEmpty) return 0;
     if (qualifyingWeeks.length == 1) {
       return weekGroups[qualifyingWeeks.first]!;

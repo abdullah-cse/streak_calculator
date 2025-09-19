@@ -1,3 +1,9 @@
+## [0.0.4] - 2024-09-19
+
+- Refactor(streak_calculator_base): Enhance validation logic and remove redundant streak validator class
+- test(streak_calculator_base): Add unit test.
+- doc(streak_calculator_base): Add doc comment with example
+
 ## [0.0.3] - 2024-09-18
 
 - Refactor(streak calculator): Simplify streak calculation logic
