@@ -1,11 +1,11 @@
 name: streak_calculator
 description: A comprehensive and high-performance streak calculation library for Dart applications. Supports daily, weekly, and monthly streak calculations with configurable parameters.
-version: 0.0.4
+version: 0.0.5
 homepage: https://github.com/abdullah-cse/streak_calculator
 repository: https://github.com/abdullah-cse/streak_calculator
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '>=2.19.0 <4.0.0'
 
 dev_dependencies:
   lints: ^5.0.0

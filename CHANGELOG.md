@@ -1,20 +1,26 @@
-## [0.0.4] - 2024-09-19
+## [0.0.5] - 2025-09-19
+
+- doc(readme): Add readme with proper documentation.
+- test(benchmark): Add benchmark test to see performance.
+- chore(pubspec): Downgrade Dart SDK from `>=3.0.0 <4.0.0` to `>=2.19.0 <4.0.0` for broader compatibility.
+
+## [0.0.4] - 2025-09-19
 
 - Refactor(streak_calculator_base): Enhance validation logic and remove redundant streak validator class
 - test(streak_calculator_base): Add unit test.
 - doc(streak_calculator_base): Add doc comment with example
 
-## [0.0.3] - 2024-09-18
+## [0.0.3] - 2025-09-18
 
 - Refactor(streak calculator): Simplify streak calculation logic
 
-## [0.0.2] - 2024-09-16
+## [0.0.2] - 2025-09-16
 
 - Refactor(weekly streak calculator) : Weekly streak calculation based on weekStart date and streakTarget.
 - test(weeklyStreakCalculator): Rewrite the Unit test covering real case scenario.
 - Removed unused test files related to streak result and utilities.
 
-## [0.0.1] - 2024-09-12
+## [0.0.1] - 2025-09-12
 
 ### Added
 - Initial release of the Streak Calculator package
@@ -33,7 +39,7 @@
 - `StreakCalculator` class as the main API entry point with enhanced functionality
 - `StreakResult` class to encapsulate calculation results
 - `StreakType` enum for different streak calculation types
-- `WeekStartDay` enum for customizable week boundaries
+- `WeekStartDay` for customizable week boundaries
 - High-performance algorithms optimized for large, messy datasets
 - Comprehensive documentation and examples with real-world scenarios
 - Current streak calculation (including today and yesterday)
