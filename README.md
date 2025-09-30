@@ -1,7 +1,7 @@
 # 🔥 Streak Calculator
 
-[![License: BSD-3-Clause](https://badgen.net/static/license/BSD-3-Clause/blue)](https://opensource.org/licenses/BSD-3-Clause) [![Pub Version](https://badgen.net/pub/v/contribution_heatmap)](https://pub.dev/packages/contribution_heatmap/versions) [![Pub Likes](https://badgen.net/pub/likes/contribution_heatmap)](https://pub.dev/packages/contribution_heatmap/score) [![Pub Monthly Downloads](https://badgen.net/pub/dm/contribution_heatmap?color=purple)](https://pub.dev/packages/contribution_heatmap/score)
-[![Github Stars](https://badgen.net/github/stars/abdullah-cse/contribution_heatmap?icon=github)](https://github.com/abdullah-cse/contribution_heatmap/stargazers) [![Github Open Isssues](https://badgen.net/github/open-issues/abdullah-cse/contribution_heatmap/?icon=github)](https://github.com/abdullah-cse/contribution_heatmap/issues) [![Github Pull Request](https://badgen.net/github/open-prs/abdullah-cse/contribution_heatmap/?icon=github)](https://github.com/abdullah-cse/contribution_heatmap/pulls) [![Github Last Commit](https://badgen.net/github/last-commit/abdullah-cse/contribution_heatmap/?icon=github)](https://github.com/abdullah-cse/contribution_heatmap/commits/main/)
+[![License: MIT](https://badgen.net/static/license/MIT/blue)](https://opensource.org/license/mit) [![Pub Version](https://badgen.net/pub/v/streak_calculator)](https://pub.dev/packages/streak_calculator/versions) [![Pub Likes](https://badgen.net/pub/likes/streak_calculator)](https://pub.dev/packages/streak_calculator/score) [![Pub Monthly Downloads](https://badgen.net/pub/dm/streak_calculator?color=purple)](https://pub.dev/packages/streak_calculator/score)
+[![Github Stars](https://badgen.net/github/stars/abdullah-cse/streak_calculator?icon=github)](https://github.com/abdullah-cse/streak_calculator/stargazers) [![Github Open Isssues](https://badgen.net/github/open-issues/abdullah-cse/streak_calculator/?icon=github)](https://github.com/abdullah-cse/streak_calculator/issues) [![Github Pull Request](https://badgen.net/github/open-prs/abdullah-cse/streak_calculator/?icon=github)](https://github.com/abdullah-cse/streak_calculator/pulls) [![Github Last Commit](https://badgen.net/github/last-commit/abdullah-cse/streak_calculator/?icon=github)](https://github.com/abdullah-cse/streak_calculator/commits/main/)
 [![X (formerly Twitter) Follow](https://badgen.net/static/Follow/@abdullahPBD/black?icon=twitter)](https://x.com/abdullahPDB)
 
 
@@ -10,7 +10,7 @@ A powerful and flexible Dart package for calculating activity streaks with suppo
 
 ## ✨ Features
 
-- **🔍 Current & Best Streaks**: Track both ongoing streaks and historical records
+- **🔥 Current & Best Streaks**: Track both ongoing streaks and historical records
 - **🗓️ Multiple Streak Types**: Daily, weekly, and monthly streak calculations
 - **🎯 Configurable Targets**: Set custom goals for weekly (1-7 days) and monthly (1-28 days) streaks
 - **📅 Flexible Week Start**: Configure any day of the week as your week start (Monday-Sunday)
@@ -18,7 +18,7 @@ A powerful and flexible Dart package for calculating activity streaks with suppo
 - **⚡ High Performance**: Optimized algorithms with O(1) lookups for large datasets
 
 - **✅ Null Safety**: Full null safety support
-- **🛡️ Robust Validation**: Comprehensive input validation with clear error messages
+
 
 ## 🚀 Quick Start
 
@@ -26,7 +26,7 @@ Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  streak_calculator: ^0.0.4
+  streak_calculator: ^0.2.0
 ```
 
 Then run:
@@ -35,9 +35,9 @@ Then run:
 dart pub get
 ```
 
-## 📋 Basic Usage
+## 📋  Basic Usage
 
-### Daily Streaks (Current+Best)
+### Daily Streaks (Current + Best)
 
 Perfect for tracking daily habits like meditation, exercise, or reading:
 
@@ -53,7 +53,6 @@ void main() {
     DateTime(2025, 9, 18),
     DateTime(2025, 9, 19), // Today
   ];
-
   final streakCalc = StreakCalculator(
     dates: meditationDates,
     streakType: StreakType.daily,
@@ -64,7 +63,7 @@ void main() {
 }
 ```
 
-### Weekly Streaks (Current+Best)
+###  Weekly Streaks (Current + Best)
 
 Great for fitness goals like "workout at least 3 times per week":
 
@@ -96,7 +95,7 @@ void main() {
 }
 ```
 
-### Monthly Streaks (Current+Best)
+### Monthly Streaks (Current + Best)
 
 Ideal for broader goals like "read at least 10 days per month":
 
@@ -130,6 +129,20 @@ void main() {
   print('Best monthly streak: ${monthlyStreak.bestStreak} months');
 }
 ```
+## ⚙️ Configuration Options
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `dates` | `List<DateTime>` | Required | List of activity dates |
+| `streakType` | `StreakType` | Required | `daily`, `weekly`, or `monthly` |
+| `streakTarget` | `int` | `1` | Days required per week (1-7) or month (1-28) |
+| `weekStartDay` | `int` | `DateTime.monday` | First day of week (1=Monday, 7=Sunday) |
+
+### 🧮 Streak Calculation Logic
+
+- **Daily**: Each consecutive day counts as +1 to streak
+- **Weekly**: Consecutive weeks with ≥ `streakTarget` days count as +1 to streak
+- **Monthly**: Consecutive months with ≥ `streakTarget` days count as +1 to streak
 
 ## 🔧 Advanced Configuration
 
@@ -153,32 +166,6 @@ final midWeekStreak = StreakCalculator(
 );
 ```
 
-### Dynamic Streak Targets
-
-```dart
-// Beginner friendly: just 1 day per week
-final beginnerStreak = StreakCalculator(
-  dates: workoutDates,
-  streakType: StreakType.weekly,
-  streakTarget: 1,
-  weekStartDay: DateTime.monday,
-);
-
-// Advanced: 5 days per week
-final advancedStreak = StreakCalculator(
-  dates: workoutDates,
-  streakType: StreakType.weekly,
-  streakTarget: 5,
-  weekStartDay: DateTime.monday,
-);
-
-// Monthly goal: 20 days minimum
-final intensiveMonthly = StreakCalculator(
-  dates: activityDates,
-  streakType: StreakType.monthly,
-  streakTarget: 20,
-);
-```
 
 ## 🎯 Real-World Examples
 
@@ -226,43 +213,6 @@ class HabitTracker {
 }
 ```
 
-### Fitness App Integration
-
-```dart
-class FitnessStreakService {
-  static Map<String, int> calculateAllStreaks(List<DateTime> workoutDates) {
-    // Daily workout streak
-    final dailyStreak = StreakCalculator(
-      dates: workoutDates,
-      streakType: StreakType.daily,
-    );
-    
-    // Weekly goal: 3+ workouts per week
-    final weeklyStreak = StreakCalculator(
-      dates: workoutDates,
-      streakType: StreakType.weekly,
-      streakTarget: 3,
-      weekStartDay: DateTime.monday,
-    );
-    
-    // Monthly goal: 12+ workouts per month
-    final monthlyStreak = StreakCalculator(
-      dates: workoutDates,
-      streakType: StreakType.monthly,
-      streakTarget: 12,
-    );
-    
-    return {
-      'dailyCurrent': dailyStreak.currentStreak,
-      'dailyBest': dailyStreak.bestStreak,
-      'weeklyCurrent': weeklyStreak.currentStreak,
-      'weeklyBest': weeklyStreak.bestStreak,
-      'monthlyCurrent': monthlyStreak.currentStreak,
-      'monthlyBest': monthlyStreak.bestStreak,
-    };
-  }
-}
-```
 
 ## 🛠️ Data Handling
 
@@ -328,46 +278,16 @@ Messy data processing:    4.47 ms
 ```
 Want to test performance on your own hardware? See [BenchMark Guide](/benchmark/benchMark.md)
 
-### Production Performance
-- **Mobile Apps**: Handles years of user data (1,000+ entries) in <5ms
-- **Analytics**: Processes 100,000+ data points in <100ms
-- **Memory Efficient**: Automatic duplicate removal saves 20-40% memory
-- **Battery Friendly**: Optimized algorithms reduce CPU usage
 
-## ⚙️ Configuration Options
+## 📝 Contributing
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `dates` | `List<DateTime>` | Required | List of activity dates |
-| `streakType` | `StreakType` | Required | `daily`, `weekly`, or `monthly` |
-| `streakTarget` | `int` | `1` | Days required per week (1-7) or month (1-28) |
-| `weekStartDay` | `int` | `DateTime.monday` | First day of week (1=Monday, 7=Sunday) |
-
-### Streak Type Details
-
-- **Daily**: Each consecutive day counts as +1 to streak
-- **Weekly**: Consecutive weeks with ≥ `streakTarget` days count as +1 to streak
-- **Monthly**: Consecutive months with ≥ `streakTarget` days count as +1 to streak
-
-## 🎨 Use Cases
-
-- **📱 Habit Tracking Apps**: Daily meditation, reading, exercise
-- **💪 Fitness Applications**: Workout consistency, step goals
-- **📚 Learning Platforms**: Study streaks, lesson completion
-- **🎮 Gaming Apps**: Login streaks, achievement tracking
-- **💼 Productivity Tools**: Task completion, project milestones
-- **🏥 Health Apps**: Medication adherence, symptom tracking
+Feel free to contribute! Check out the [guides](/CONTRIBUTING.md) for more information.
 
 
+## ❤️‍🔥 Enjoying this package?
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🌟 Support
-
-If this package helped you, please give it a ⭐ on [pub.dev](https://pub.dev/packages/streak_calculator)!
-
-For issues and feature requests, visit our [GitHub repository](https://github.com/your-username/streak_calculator).
+Here are a few ways you can show support:
+- ⭐️ Star it on [GitHub](https://github.com/abdullah-cse/streak_calculator) – stars help others discover it!
+- If this package helped you, please give it a ⭐ on [pub.dev](https://pub.dev/packages/streak_calculator)!
+- 👉 Try my [TypeFast app](https://web.typefast.app), a fun way to sharpen your touch typing skills with games.
+- 👉  Explore more of my [work!](https://abdullah.com.bd)
