@@ -5,7 +5,9 @@
 [![X (formerly Twitter) Follow](https://badgen.net/static/Follow/@abdullahPBD/black?icon=twitter)](https://x.com/abdullahPDB)
 
 
-A powerful and flexible Dart package for calculating activity streaks with support for daily, weekly, and monthly patterns. Perfect for habit tracking apps, fitness applications, productivity tools, and any app that needs to measure user engagement consistency.
+A powerful and flexible Dart package for calculating activity streaks with support for daily, weekly, and monthly patterns.
+
+Perfect for habit tracking apps, fitness applications, productivity tools, and any app that needs to measure user engagement consistency.
 
 
 ## ✨ Features
@@ -26,7 +28,7 @@ Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  streak_calculator: ^0.2.0
+  streak_calculator: ^0.2.1
 ```
 
 Then run:
@@ -164,53 +166,6 @@ final midWeekStreak = StreakCalculator(
   streakTarget: 4,
   weekStartDay: DateTime.wednesday,
 );
-```
-
-
-## 🎯 Real-World Examples
-
-### Habit Tracking App
-
-```dart
-class HabitTracker {
-  static StreakResult calculateHabitStreak(
-    List<DateTime> completionDates,
-    HabitType habitType,
-  ) {
-    late StreakCalculator calculator;
-    
-    switch (habitType) {
-      case HabitType.daily:
-        calculator = StreakCalculator(
-          dates: completionDates,
-          streakType: StreakType.daily,
-        );
-        break;
-        
-      case HabitType.weeklyGoal:
-        calculator = StreakCalculator(
-          dates: completionDates,
-          streakType: StreakType.weekly,
-          streakTarget: 5, // 5 days per week
-          weekStartDay: DateTime.monday,
-        );
-        break;
-        
-      case HabitType.monthlyGoal:
-        calculator = StreakCalculator(
-          dates: completionDates,
-          streakType: StreakType.monthly,
-          streakTarget: 15, // 15 days per month
-        );
-        break;
-    }
-    
-    return StreakResult(
-      currentStreak: calculator.currentStreak,
-      bestStreak: calculator.bestStreak,
-    );
-  }
-}
 ```
 
 

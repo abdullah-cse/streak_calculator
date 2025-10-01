@@ -1,4 +1,7 @@
 ## [0.2.0] - 2025-09-20
+- doc(readme): Simplified readme.
+
+## [0.2.0] - 2025-09-20
 
 - doc(readme): Add readme with proper documentation.
 - test(monthly_streak_calculator): Write monthly streak calculator from scratch.
