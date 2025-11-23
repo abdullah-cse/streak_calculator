@@ -1,32 +1,35 @@
+## [0.2.2] - 2025-11-24
+- **chore(readme)**: Add Streak Calculator Screenshot
+
 ## [0.2.1] - 2025-10-01
-- doc(readme): Simplified readme.
+- **doc(readme)**: Simplified readme.
 
 ## [0.2.0] - 2025-09-20
 
-- doc(readme): Add readme with proper documentation.
-- test(monthly_streak_calculator): Write monthly streak calculator from scratch.
+- **doc(readme)**: Add readme with proper documentation.
+- **test(monthly_streak_calculator)**: Write monthly streak calculator from scratch.
 - Remove unused month_key_generator.
 
 ## [0.1.5] - 2025-09-19
 
-- doc(readme): Add readme with proper documentation.
-- test(benchmark): Add benchmark test to see performance.
-- chore(pubspec): Downgrade Dart SDK from `>=3.0.0 <4.0.0` to `>=2.19.0 <4.0.0` for broader compatibility.
+- **doc(readme)**: Add readme with proper documentation.
+- **test(benchmark)**: Add benchmark test to see performance.
+- **chore(pubspec)**: Downgrade Dart SDK from `>=3.0.0 <4.0.0` to `>=2.19.0 <4.0.0` for broader compatibility.
 
 ## [0.1.4] - 2025-09-19
 
-- Refactor(streak_calculator_base): Enhance validation logic and remove redundant streak validator class
-- test(streak_calculator_base): Add unit test.
-- doc(streak_calculator_base): Add doc comment with example
+- **Refactor(streak_calculator_base)**: Enhance validation logic and remove redundant streak validator class
+- **test(streak_calculator_base)**: Add unit test.
+- **doc(streak_calculator_base)**: Add doc comment with example
 
 ## [0.1.3] - 2025-09-18
 
-- Refactor(streak calculator): Simplify streak calculation logic
+- **Refactor(streak calculator)**: Simplify streak calculation logic
 
 ## [0.1.1] - 2025-09-16
 
-- Refactor(weekly streak calculator) : Weekly streak calculation based on weekStart date and streakTarget.
-- test(weeklyStreakCalculator): Rewrite the Unit test covering real case scenario.
+- **Refactor(weekly streak calculator)** : Weekly streak calculation based on weekStart date and streakTarget.
+- **test(weeklyStreakCalculator)**: Rewrite the Unit test covering real case scenario.
 - Removed unused test files related to streak result and utilities.
 
 ## [0.1.0] - 2025-09-12

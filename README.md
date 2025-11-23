@@ -4,8 +4,8 @@
 [![Github Stars](https://badgen.net/github/stars/abdullah-cse/streak_calculator?icon=github)](https://github.com/abdullah-cse/streak_calculator/stargazers) [![Github Open Isssues](https://badgen.net/github/open-issues/abdullah-cse/streak_calculator/?icon=github)](https://github.com/abdullah-cse/streak_calculator/issues) [![Github Pull Request](https://badgen.net/github/open-prs/abdullah-cse/streak_calculator/?icon=github)](https://github.com/abdullah-cse/streak_calculator/pulls) [![Github Last Commit](https://badgen.net/github/last-commit/abdullah-cse/streak_calculator/?icon=github)](https://github.com/abdullah-cse/streak_calculator/commits/main/)
 [![X (formerly Twitter) Follow](https://badgen.net/static/Follow/@abdullahPBD/black?icon=twitter)](https://x.com/abdullahPDB)
 
-
-A powerful and flexible Dart package for calculating activity streaks with support for daily, weekly, and monthly patterns.
+![Streak Calculator](/example/screenshots/streak_calculator.png)
+## A powerful and flexible Dart package for calculating activity streaks with support for daily, weekly, and monthly patterns.
 
 Perfect for habit tracking apps, fitness applications, productivity tools, and any app that needs to measure user engagement consistency.
 
@@ -28,7 +28,7 @@ Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  streak_calculator: ^0.2.1
+  streak_calculator: ^0.2.2
 ```
 
 Then run:
@@ -208,10 +208,10 @@ void main() {
 
 ### Benchmark Results
 
-Tested on MacMini M2 (2023), 16GB RAM, Dart 3.0+
+Tested on my MacMini M2 (2023), 16GB RAM, Dart 3.0+
 
 #### Dataset Size Performance (Daily Streaks)
-```
+```bash
    100 dates:     0.45 ms
  1,000 dates:     1.23 ms
 10,000 dates:     8.91 ms
@@ -220,14 +220,14 @@ Tested on MacMini M2 (2023), 16GB RAM, Dart 3.0+
 ```
 
 #### Streak Type Performance (10,000 dates)
-```
+```bash
 Daily  :  6.85 ms
 Weekly :  6.96 ms
 Monthly:  4.81 ms
 ```
 
 #### Real-World Data Handling
-```
+```bash
 Messy data processing:    4.47 ms
 (10,000 dates with duplicates, random times, unsorted)
 ```
