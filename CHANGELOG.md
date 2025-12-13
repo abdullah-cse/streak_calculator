@@ -1,3 +1,6 @@
+## [0.2.4] - 2025-12-14
+- **fix(readme)**: Fixed a typo in CodeCoverage badge so, badge are showing code coverage.
+  
 ## [0.2.3] - 2025-12-14
 - **feat(codecov)**: Add Code Coverage Metrics to **Build Trust** in **Code Quality**.
 - **feat(test)**: Add `FakeDateNormalizer`, so we can control "today".
