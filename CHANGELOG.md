@@ -1,3 +1,12 @@
+## [0.2.3] - 2025-12-14
+- **feat(codecov)**: Add Code Coverage Metrics to **Build Trust** in **Code Quality**.
+- **feat(test)**: Add `FakeDateNormalizer`, so we can control "today".
+- **feat(ci)**: Add Dart CI to test on push Main | pull Main.
+- **fix(test)**: Fix some test to use improved `FakeDateNormalizer` instead of `referencedate`.
+- **fix(readme)**: Add Code Coverage badge.
+- **chore (core)**: Full path import in every file to eliminate ambiguity.
+
+
 ## [0.2.2] - 2025-11-24
 - **chore(readme)**: Add Streak Calculator Screenshot
 
@@ -59,23 +68,3 @@
 - O(1) date lookup using HashSet data structure with sorted processing
 - Single responsibility principle architecture
 - Extensive code documentation with examples
-
-### Features
-- **Daily Streaks**: Calculate consecutive days with activity
-- **Weekly Streaks**: Calculate consecutive weeks with at least N active days (1-7 configurable)
-- **Monthly Streaks**: Calculate consecutive months with at least N active days (1-28 configurable)
-- **Configurable Week Start**: Support for all 7 days as week start options
-- **Data Cleaning**: Automatically handles unsorted dates, duplicates, and time normalization
-- **Streak Target Validation**: Comprehensive validation with helpful error messages
-- **Performance Optimized**: Efficient handling of large, messy date datasets
-- **Clean API**: Simple, intuitive method signatures with optional parameters
-- **Null Safety**: Full null safety support
-- **Error Handling**: Proper validation and error messages for all edge cases
-
-### Performance Characteristics
-- O(n log n) time complexity for initial data cleaning and sorting
-- O(1) average time complexity for date lookups during streak calculation
-- Memory efficient date normalization and duplicate removal
-- Optimized for datasets with 10,000+ entries including duplicates and random order
-- Smart filtering for streak target calculations
-

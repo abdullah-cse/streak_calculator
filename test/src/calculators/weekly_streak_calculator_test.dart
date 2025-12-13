@@ -2,13 +2,17 @@ import 'package:streak_calculator/src/calculators/weekly_streak_calculator.dart'
 import 'package:streak_calculator/src/enum/streak_type.dart';
 import 'package:test/test.dart';
 
+import '../utilities/fakedate_normalizer.dart';
+
 void main() {
   late WeeklyStreakCalculator calculator;
   late DateTime today;
 
   setUp(() {
-    calculator = const WeeklyStreakCalculator();
     today = DateTime(2025, 9, 18); //Fixed date for consistent testing
+    calculator = WeeklyStreakCalculator(
+      dateNormalizer: FakeDateNormalizer(today),
+    );
   });
 
   DateTime daysAgo(int days) => today.subtract(Duration(days: days));
@@ -19,7 +23,7 @@ void main() {
   group('WeeklyStreakCalculator', () {
     group('Validation', () {
       test('empty dates returns 0 streaks', () {
-        final result = calculator.calculateStreak({}, 1, 3);
+        final result = calculator.calculateStreak({today}, 1, 3);
         expect(result.currentStreak, 0);
         expect(result.bestStreak, 0);
         expect(result.streakType, StreakType.weekly);
@@ -75,7 +79,6 @@ void main() {
           dates,
           1,
           2,
-          referenceDate: today, // Make it explicit
         );
         expect(result.currentStreak, 0);
         expect(result.bestStreak, 5);
@@ -141,14 +144,15 @@ void main() {
 
         // Use Monday as reference date
         final referenceDate = DateTime(2024, 1, 8);
-
-        final resultMon = calculator.calculateStreak(
-          dates, 1, 2, // Monday start
-          referenceDate: referenceDate,
+        final mondayCalculator = WeeklyStreakCalculator(
+          dateNormalizer: FakeDateNormalizer(referenceDate),
         );
-        final resultSun = calculator.calculateStreak(
+
+        final resultMon = mondayCalculator.calculateStreak(
+          dates, 1, 2, // Monday start
+        );
+        final resultSun = mondayCalculator.calculateStreak(
           dates, 7, 2, // Sunday start
-          referenceDate: referenceDate,
         );
 
         expect(resultMon.currentStreak != resultSun.currentStreak, true);

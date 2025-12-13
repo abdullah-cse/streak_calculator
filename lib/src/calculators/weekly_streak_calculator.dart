@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:streak_calculator/src/enum/streak_type.dart';
 import 'package:streak_calculator/src/model/streak_result.dart';
+import 'package:streak_calculator/src/utilities/date_normalizer.dart';
 
 /// Calculates weekly streaks based on activity dates.
 ///
@@ -8,20 +9,23 @@ import 'package:streak_calculator/src/model/streak_result.dart';
 /// A week qualifies if it has at least the target number of active days.
 class WeeklyStreakCalculator {
   /// Creates a new weekly streak calculator instance.
-  const WeeklyStreakCalculator();
+  const WeeklyStreakCalculator({
+    DateNormalizer? dateNormalizer,
+  }) : _dateNormalizer = dateNormalizer ?? const DateNormalizer();
+
+  final DateNormalizer _dateNormalizer;
 
   /// Calculates streak statistics for the given activity dates.
   ///
   /// Returns current streak (days in consecutive qualifying weeks ending at reference date)
   /// and best streak (highest total days in any consecutive qualifying sequence).
   ///
-  /// If [referenceDate] is null, uses DateTime.now().
+  /// Uses internal [DateNormalizer] to determine the "current" date (today).
   StreakResult calculateStreak(
     Set<DateTime> normalizedDates,
     int weekStartDay,
-    int streakTarget, {
-    DateTime? referenceDate,
-  }) {
+    int streakTarget,
+  ) {
     if (weekStartDay < 1 || weekStartDay > 7) {
       throw ArgumentError(
         'Week start day must be between 1 (Monday) and 7 (Sunday)',
@@ -41,7 +45,7 @@ class WeeklyStreakCalculator {
       );
     }
 
-    final reference = referenceDate ?? DateTime.now();
+    final reference = _dateNormalizer.getTodayNormalized();
     final weekGroups = _groupDatesByWeek(normalizedDates, weekStartDay);
     final qualifyingWeeks = _getQualifyingWeeks(weekGroups, streakTarget);
 

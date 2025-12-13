@@ -1,12 +1,16 @@
 import 'package:streak_calculator/src/calculators/monthly_streak_calculator.dart';
 import 'package:streak_calculator/src/enum/streak_type.dart';
 import 'package:test/test.dart';
+import 'daily_streak_calculator_test.dart';
 
 void main() {
   late MonthlyStreakCalculator calculator;
+  final today = DateTime(2025, 9, 30);
 
   setUp(() {
-    calculator = const MonthlyStreakCalculator();
+    calculator = MonthlyStreakCalculator(
+      dateNormalizer: FakeDateNormalizer(today),
+    );
   });
 
   /// Helper to create dates for a specific month

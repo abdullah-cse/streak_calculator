@@ -1,4 +1,4 @@
-import '../enum/streak_type.dart';
+import 'package:streak_calculator/src/enum/streak_type.dart';
 
 /// Represents the result of a streak calculation.
 ///
