@@ -1,6 +1,6 @@
-import '../enum/streak_type.dart';
-import '../model/streak_result.dart';
-import '../utilities/date_normalizer.dart';
+import 'package:streak_calculator/src/enum/streak_type.dart';
+import 'package:streak_calculator/src/model/streak_result.dart';
+import 'package:streak_calculator/src/utilities/date_normalizer.dart';
 
 /// Calculator specialized for daily streak calculations.
 ///

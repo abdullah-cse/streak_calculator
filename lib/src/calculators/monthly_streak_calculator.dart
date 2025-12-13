@@ -1,5 +1,6 @@
-import '../enum/streak_type.dart';
-import '../model/streak_result.dart';
+import 'package:streak_calculator/src/enum/streak_type.dart';
+import 'package:streak_calculator/src/model/streak_result.dart';
+import 'package:streak_calculator/src/utilities/date_normalizer.dart';
 
 /// A calculator that computes monthly streaks based on a target number of days per month.
 ///
@@ -25,7 +26,11 @@ import '../model/streak_result.dart';
 /// ```
 class MonthlyStreakCalculator {
   /// Creates a new monthly streak calculator instance.
-  const MonthlyStreakCalculator();
+  const MonthlyStreakCalculator({
+    DateNormalizer? dateNormalizer,
+  }) : _dateNormalizer = dateNormalizer ?? const DateNormalizer();
+
+  final DateNormalizer _dateNormalizer;
 
   /// Calculates the monthly streak for the given normalized dates and target.
   ///
@@ -118,7 +123,7 @@ class MonthlyStreakCalculator {
     if (sortedMonths.isEmpty) return 0;
 
     // Get current month key for "including today" logic
-    final now = DateTime.now();
+    final now = _dateNormalizer.getTodayNormalized();
     final currentMonthKey = now.year * 100 + now.month;
 
     // Determine starting point for current streak calculation
