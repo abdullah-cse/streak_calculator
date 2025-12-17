@@ -1,7 +1,7 @@
 name: streak_calculator
 description: A high-performance Dart package for streak tracking—daily, weekly, or monthly. Supports custom goals, flexible week starts, and current & best streaks.
 
-version: 0.2.4
+version: 0.2.5
 
 homepage: https://github.com/abdullah-cse/streak_calculator
 repository: https://github.com/abdullah-cse/streak_calculator

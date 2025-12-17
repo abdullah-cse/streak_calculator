@@ -1,3 +1,8 @@
+## [0.2.5] - 2025-12-17
+- **feat(test)**: Add streak result test.
+- **feat(test)**: Add date normalizer test.
+- **feat(CD)**: Add auto publishing to pub.dev with GitHub Action. 
+
 ## [0.2.4] - 2025-12-14
 - **fix(readme)**: Fixed a typo in CodeCoverage badge so, badge are showing code coverage.
   
