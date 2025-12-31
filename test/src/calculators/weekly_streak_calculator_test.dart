@@ -23,7 +23,7 @@ void main() {
   group('WeeklyStreakCalculator', () {
     group('Validation', () {
       test('empty dates returns 0 streaks', () {
-        final result = calculator.calculateStreak({today}, 1, 3);
+        final result = calculator.calculateStreak({}, 1, 3);
         expect(result.currentStreak, 0);
         expect(result.bestStreak, 0);
         expect(result.streakType, StreakType.weekly);
@@ -137,13 +137,13 @@ void main() {
 
       test('sunday vs monday start - different behavior', () {
         // Use dates that will span different weeks based on start day
-        final saturday = DateTime(2024, 1, 6); // Saturday
-        final sunday = DateTime(2024, 1, 7); // Sunday
-        final monday = DateTime(2024, 1, 8); // Monday
+        final saturday = DateTime(2025, 1, 4); // Saturday
+        final sunday = DateTime(2025, 1, 5); // Sunday
+        final monday = DateTime(2025, 1, 6); // Monday
         final dates = {saturday, sunday, monday};
 
         // Use Monday as reference date
-        final referenceDate = DateTime(2024, 1, 8);
+        final referenceDate = DateTime(2025, 1, 6);
         final mondayCalculator = WeeklyStreakCalculator(
           dateNormalizer: FakeDateNormalizer(referenceDate),
         );
@@ -162,11 +162,11 @@ void main() {
     group('Year boundary and leap year', () {
       test('spanning years', () {
         final dates = {
-          DateTime(2023, 12, 29),
-          DateTime(2023, 12, 30),
-          DateTime(2023, 12, 31),
-          DateTime(2024, 1, 1),
-          DateTime(2024, 1, 2),
+          DateTime(2024, 12, 29),
+          DateTime(2024, 12, 30),
+          DateTime(2024, 12, 31),
+          DateTime(2025, 1, 1),
+          DateTime(2025, 1, 2),
         };
         final result = calculator.calculateStreak(dates, 1, 3);
         expect(result.bestStreak, greaterThan(0));

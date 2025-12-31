@@ -8,26 +8,26 @@ void main() {
     group('normalizeDates', () {
       test('removes time components', () {
         final dates = [
-          DateTime(2023, 1, 1, 10, 30),
-          DateTime(2023, 1, 2, 23, 59),
+          DateTime(2025, 1, 1, 10, 30),
+          DateTime(2025, 1, 2, 23, 59),
         ];
         final normalized = normalizer.normalizeDates(dates);
 
         expect(normalized, hasLength(2));
-        expect(normalized.contains(DateTime(2023, 1, 1)), isTrue);
-        expect(normalized.contains(DateTime(2023, 1, 2)), isTrue);
+        expect(normalized.contains(DateTime(2025, 1, 1)), isTrue);
+        expect(normalized.contains(DateTime(2025, 1, 2)), isTrue);
       });
 
       test('removes duplicates', () {
         final dates = [
-          DateTime(2023, 1, 1, 10, 30),
-          DateTime(2023, 1, 1, 15, 0), // Same day, different time
-          DateTime(2023, 1, 1), // Same day, no time
+          DateTime(2025, 1, 1, 10, 30),
+          DateTime(2025, 1, 1, 15, 0), // Same day, different time
+          DateTime(2025, 1, 1), // Same day, no time
         ];
         final normalized = normalizer.normalizeDates(dates);
 
         expect(normalized, hasLength(1));
-        expect(normalized.first, DateTime(2023, 1, 1));
+        expect(normalized.first, DateTime(2025, 1, 1));
       });
 
       test('handles empty list', () {

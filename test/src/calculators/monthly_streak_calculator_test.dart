@@ -204,6 +204,25 @@ void main() {
         expect(result.currentStreak, 1); // Only current September
         expect(result.bestStreak, 3); // Dec 2024 - Jan 2025 - Feb 2025
       });
+
+      test('current streak transitions January to December of previous year',
+          () {
+        // "Today" is set to Jan 15, 2025 in a local calculator
+        final janToday = DateTime(2025, 1, 15);
+        final janCalculator = MonthlyStreakCalculator(
+          dateNormalizer: FakeDateNormalizer(janToday),
+        );
+
+        final dates =
+            datesInMonth(2024, 12, [1, 8, 15, 22, 29]) // Dec 2024: 5 days (> 4)
+                .union(datesInMonth(
+                    2025, 1, [2, 9, 16, 23, 30])); // Jan 2025: 5 days (> 4)
+
+        final result = janCalculator.calculateStreak(dates, 4);
+        // Should capture both Jan 2025 and Dec 2024
+        expect(result.currentStreak, 2);
+        expect(result.bestStreak, 2);
+      });
     });
 
     group('Edge cases', () {
