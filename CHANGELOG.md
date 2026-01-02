@@ -1,3 +1,6 @@
+## [1.0.0] - 2026-01-02
+- **feat(test)**: Add all missing test to 100% code coverage.
+
 ## [0.2.5] - 2025-12-17
 - **feat(test)**: Add streak result test.
 - **feat(test)**: Add date normalizer test.
